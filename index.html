@@ -2,87 +2,120 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>My Mining Farm</title>
+<title>CriptoCapital Mining Farm</title>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
 
 <style>
 
 body{
-background:#020b1c;
-color:white;
+background:linear-gradient(180deg,#020617,#020c1b);
 font-family:Arial;
+color:white;
 text-align:center;
+margin:0;
 }
 
-h1{
-margin-top:40px;
+.header{
+padding:30px;
+font-size:32px;
+font-weight:bold;
+}
+
+.wallet-box{
+margin-top:10px;
 }
 
 button{
-padding:12px 25px;
+background:#00ff9d;
 border:none;
+padding:12px 25px;
 border-radius:10px;
-background:#00ffa6;
-color:#000;
 font-weight:bold;
 cursor:pointer;
-margin-top:20px;
+margin:10px;
 }
 
-.rig{
+.panel{
+margin-top:20px;
 display:flex;
 justify-content:center;
-gap:20px;
-margin-top:50px;
+gap:30px;
+flex-wrap:wrap;
+}
+
+.card{
+background:#0a1626;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 15px #00ff9d33;
+width:140px;
+}
+
+.balance{
+font-size:24px;
+color:#00ff9d;
+}
+
+.farm{
+margin-top:40px;
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
 }
 
 .gpu{
-width:120px;
-height:60px;
-background:#0f1f2e;
-border-radius:12px;
-box-shadow:0 0 15px #00ffa6;
+width:150px;
+height:80px;
+background:#0f1f33;
+border-radius:15px;
 position:relative;
+box-shadow:0 0 20px #00ff9d55;
 }
 
 .fan{
-width:28px;
-height:28px;
-border:4px solid #555;
-border-top:4px solid #00ffa6;
+width:36px;
+height:36px;
+border:4px solid #444;
+border-top:4px solid #00ff9d;
 border-radius:50%;
 position:absolute;
-top:16px;
-left:46px;
-animation:spin 1s linear infinite;
+top:20px;
+left:55px;
+animation:spin 0.8s linear infinite;
 }
 
 @keyframes spin{
-0%{transform:rotate(0)}
-100%{transform:rotate(360deg)}
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
 }
 
 .led{
-width:6px;
-height:6px;
-background:#00ffa6;
+width:8px;
+height:8px;
+background:#00ff9d;
 border-radius:50%;
 position:absolute;
-right:10px;
-top:10px;
+right:12px;
+top:12px;
 animation:blink 1s infinite;
 }
 
 @keyframes blink{
 0%{opacity:1}
-50%{opacity:0.3}
+50%{opacity:0.2}
 100%{opacity:1}
 }
 
-.wallet{
-margin-top:20px;
+.actions{
+margin-top:40px;
+}
+
+.ref{
+margin-top:30px;
 font-size:14px;
+color:#aaa;
 }
 
 </style>
@@ -90,91 +123,115 @@ font-size:14px;
 
 <body>
 
-<h1>My Mining Farm</h1>
+<div class="header">CriptoCapital</div>
 
 <button onclick="connectWallet()">Connect Wallet</button>
 
-<div class="wallet" id="wallet">Wallet: not connected</div>
+<div id="wallet">Wallet: not connected</div>
 
-<div class="rig">
+<div class="panel">
 
-<div class="gpu">
-<div class="fan"></div>
-<div class="led"></div>
+<div class="card">
+<div>Balance</div>
+<div class="balance" id="balance">0 BNB</div>
 </div>
 
-<div class="gpu">
-<div class="fan"></div>
-<div class="led"></div>
+<div class="card">
+<div>GPU</div>
+<div id="gpuCount">0</div>
 </div>
 
-<div class="gpu">
-<div class="fan"></div>
-<div class="led"></div>
+<div class="card">
+<div>Hashrate</div>
+<div id="hashrate">0 MH/s</div>
 </div>
 
 </div>
+
+<div class="farm" id="farm"></div>
+
+<div class="actions">
 
 <button onclick="buyGPU()">Buy GPU (0.01 BNB)</button>
+
+<button onclick="upgradeGPU()">Upgrade GPU</button>
+
+<button onclick="withdraw()">Withdraw</button>
+
+</div>
+
+<div class="ref">
+Referral link:<br>
+<span id="refLink">connect wallet</span>
+</div>
 
 <script>
 
 let web3;
 let account;
+let gpuCount=0;
 
-const contractAddress = "PASTE_CONTRACT_ADDRESS";
+function renderFarm(){
 
-const contractABI = [
-{
-"inputs":[],
-"name":"buyGPU",
-"outputs":[],
-"stateMutability":"payable",
-"type":"function"
+const farm=document.getElementById("farm");
+farm.innerHTML="";
+
+for(let i=0;i<gpuCount;i++){
+
+farm.innerHTML+=`
+<div class="gpu">
+<div class="fan"></div>
+<div class="led"></div>
+</div>
+`;
+
 }
-];
+
+}
 
 async function connectWallet(){
 
 if(window.ethereum){
 
-web3 = new Web3(window.ethereum);
+web3=new Web3(window.ethereum);
 
-await window.ethereum.request({
-method:'eth_requestAccounts'
-});
+await ethereum.request({method:'eth_requestAccounts'});
 
-const accounts = await web3.eth.getAccounts();
+const accounts=await web3.eth.getAccounts();
 
-account = accounts[0];
+account=accounts[0];
 
-document.getElementById("wallet").innerText =
-"Wallet: "+account;
+document.getElementById("wallet").innerText="Wallet: "+account;
 
-}else{
-
-alert("Install MetaMask");
+document.getElementById("refLink").innerText=
+window.location.href+"?ref="+account;
 
 }
 
 }
 
-async function buyGPU(){
+function buyGPU(){
 
-const contract = new web3.eth.Contract(
-contractABI,
-contractAddress
-);
+gpuCount++;
 
-await contract.methods.buyGPU().send({
+document.getElementById("gpuCount").innerText=gpuCount;
 
-from:account,
+document.getElementById("hashrate").innerText=
+gpuCount*50+" MH/s";
 
-value:web3.utils.toWei("0.01","ether")
+renderFarm();
 
-});
+}
 
-alert("GPU purchased");
+function upgradeGPU(){
+
+alert("GPU upgraded");
+
+}
+
+function withdraw(){
+
+alert("Withdraw from smart contract");
 
 }
 
