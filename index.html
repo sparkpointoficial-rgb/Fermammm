@@ -2,93 +2,104 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>CriptoCapital Mining Farm</title>
+<title>CriptoCapital Dashboard</title>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
 
 <style>
 
 body{
-background:linear-gradient(180deg,#020617,#020c1b);
-font-family:Arial;
-color:white;
-text-align:center;
 margin:0;
+font-family:Arial;
+background:linear-gradient(180deg,#020617,#020c1b,#020617);
+color:white;
 }
 
-.header{
-padding:30px;
-font-size:32px;
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+background:#020617;
+box-shadow:0 0 20px #00ff9d22;
+}
+
+.logo{
+font-size:26px;
 font-weight:bold;
+color:#00ff9d;
 }
 
-.wallet-box{
-margin-top:10px;
-}
-
-button{
+.connect{
 background:#00ff9d;
 border:none;
-padding:12px 25px;
+padding:10px 20px;
 border-radius:10px;
-font-weight:bold;
 cursor:pointer;
-margin:10px;
+font-weight:bold;
 }
 
-.panel{
-margin-top:20px;
+.dashboard{
+display:flex;
+gap:20px;
+padding:30px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.card{
+background:#071426;
+padding:20px;
+border-radius:15px;
+width:160px;
+text-align:center;
+box-shadow:0 0 15px #00ff9d33;
+}
+
+.card h3{
+margin:0;
+font-size:16px;
+color:#aaa;
+}
+
+.value{
+font-size:24px;
+color:#00ff9d;
+margin-top:5px;
+}
+
+.farm{
+margin-top:30px;
 display:flex;
 justify-content:center;
 gap:30px;
 flex-wrap:wrap;
 }
 
-.card{
-background:#0a1626;
-padding:20px;
-border-radius:15px;
-box-shadow:0 0 15px #00ff9d33;
-width:140px;
-}
-
-.balance{
-font-size:24px;
-color:#00ff9d;
-}
-
-.farm{
-margin-top:40px;
-display:flex;
-justify-content:center;
-gap:25px;
-flex-wrap:wrap;
-}
-
 .gpu{
-width:150px;
-height:80px;
-background:#0f1f33;
+width:170px;
+height:90px;
+background:#0b1c33;
 border-radius:15px;
 position:relative;
 box-shadow:0 0 20px #00ff9d55;
 }
 
 .fan{
-width:36px;
-height:36px;
-border:4px solid #444;
+width:38px;
+height:38px;
+border:4px solid #555;
 border-top:4px solid #00ff9d;
 border-radius:50%;
 position:absolute;
-top:20px;
-left:55px;
-animation:spin 0.8s linear infinite;
+top:25px;
+left:65px;
+animation:spin 0.7s linear infinite;
 }
 
 @keyframes spin{
-0%{transform:rotate(0deg);}
-100%{transform:rotate(360deg);}
+0%{transform:rotate(0)}
+100%{transform:rotate(360deg)}
 }
 
 .led{
@@ -109,13 +120,25 @@ animation:blink 1s infinite;
 }
 
 .actions{
-margin-top:40px;
+text-align:center;
+margin-top:30px;
+}
+
+button.action{
+background:#00ff9d;
+border:none;
+padding:12px 25px;
+border-radius:10px;
+margin:10px;
+font-weight:bold;
+cursor:pointer;
 }
 
 .ref{
+text-align:center;
 margin-top:30px;
-font-size:14px;
 color:#aaa;
+font-size:14px;
 }
 
 </style>
@@ -123,27 +146,34 @@ color:#aaa;
 
 <body>
 
-<div class="header">CriptoCapital</div>
+<header>
 
-<button onclick="connectWallet()">Connect Wallet</button>
+<div class="logo">CriptoCapital</div>
 
-<div id="wallet">Wallet: not connected</div>
+<button class="connect" onclick="connectWallet()">Connect Wallet</button>
 
-<div class="panel">
+</header>
+
+<div class="dashboard">
 
 <div class="card">
-<div>Balance</div>
-<div class="balance" id="balance">0 BNB</div>
+<h3>Balance</h3>
+<div class="value" id="balance">0 BNB</div>
 </div>
 
 <div class="card">
-<div>GPU</div>
-<div id="gpuCount">0</div>
+<h3>GPU</h3>
+<div class="value" id="gpuCount">0</div>
 </div>
 
 <div class="card">
-<div>Hashrate</div>
-<div id="hashrate">0 MH/s</div>
+<h3>Hashrate</h3>
+<div class="value" id="hashrate">0 MH/s</div>
+</div>
+
+<div class="card">
+<h3>Income/hour</h3>
+<div class="value" id="income">0</div>
 </div>
 
 </div>
@@ -152,11 +182,11 @@ color:#aaa;
 
 <div class="actions">
 
-<button onclick="buyGPU()">Buy GPU (0.01 BNB)</button>
+<button class="action" onclick="buyGPU()">Buy GPU (0.01 BNB)</button>
 
-<button onclick="upgradeGPU()">Upgrade GPU</button>
+<button class="action" onclick="upgradeGPU()">Upgrade GPU</button>
 
-<button onclick="withdraw()">Withdraw</button>
+<button class="action" onclick="withdraw()">Withdraw</button>
 
 </div>
 
@@ -169,16 +199,18 @@ Referral link:<br>
 
 let web3;
 let account;
-let gpuCount=0;
+
+let gpuCount = 0;
 
 function renderFarm(){
 
-const farm=document.getElementById("farm");
+const farm = document.getElementById("farm");
+
 farm.innerHTML="";
 
 for(let i=0;i<gpuCount;i++){
 
-farm.innerHTML+=`
+farm.innerHTML += `
 <div class="gpu">
 <div class="fan"></div>
 <div class="led"></div>
@@ -193,17 +225,17 @@ async function connectWallet(){
 
 if(window.ethereum){
 
-web3=new Web3(window.ethereum);
+web3 = new Web3(window.ethereum);
 
-await ethereum.request({method:'eth_requestAccounts'});
+await window.ethereum.request({
+method:'eth_requestAccounts'
+});
 
-const accounts=await web3.eth.getAccounts();
+const accounts = await web3.eth.getAccounts();
 
-account=accounts[0];
+account = accounts[0];
 
-document.getElementById("wallet").innerText="Wallet: "+account;
-
-document.getElementById("refLink").innerText=
+document.getElementById("refLink").innerText =
 window.location.href+"?ref="+account;
 
 }
@@ -216,8 +248,11 @@ gpuCount++;
 
 document.getElementById("gpuCount").innerText=gpuCount;
 
-document.getElementById("hashrate").innerText=
-gpuCount*50+" MH/s";
+document.getElementById("hashrate").innerText =
+gpuCount*60+" MH/s";
+
+document.getElementById("income").innerText =
+(gpuCount*0.0002).toFixed(5)+" BNB";
 
 renderFarm();
 
