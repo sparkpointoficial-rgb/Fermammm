@@ -392,7 +392,7 @@ function renderStructure(currentLevel, partnersCount, structureCount) {
         for (let i = 0; i < slots; i++) {
             const dot = document.createElement('div');
             dot.className = 'dot';
-            // Добавляем текст "SLOT" внутрь каждого места
+            // Добавляем текст "CAPITAL" внутрь каждого места
             dot.textContent = 'SLOT';
             if (i < filledThisLevel) dot.classList.add('active');
             dotsDiv.appendChild(dot);
