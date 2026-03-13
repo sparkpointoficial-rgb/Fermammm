@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SparkPoint Premium — места в матрице</title>
+    <title>SparkPoint Premium — места с надписью SLOT</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <style>
         :root {
@@ -25,7 +25,6 @@
             min-height: 100vh;
         }
 
-        /* Бегущая строка */
         .ticker {
             background: linear-gradient(90deg, #111133, #1a1a2e);
             color: var(--neon-green);
@@ -64,7 +63,6 @@
         }
         .logo span { font-size: 2.8rem; filter: drop-shadow(0 0 10px var(--gold)); }
 
-        /* Анимированный логотип */
         .logo-node {
             width: 48px;
             height: 48px;
@@ -137,7 +135,7 @@
         .lvl-name { font-size: 1rem; font-weight: bold; color: var(--neon-green); }
         .lvl-slots { font-size: 0.8rem; color: #aaa; }
 
-        /* === НОВЫЙ ДИЗАЙН МЕСТ (ВМЕСТО КРУЖКОВ) === */
+        /* === КВАДРАТЫ С НАДПИСЬЮ SLOT === */
         .dots { 
             display: flex; 
             justify-content: center; 
@@ -156,11 +154,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
-            color: #1e3f5a;
+            font-size: 0.75rem;
             font-weight: 600;
+            color: #1e3f5a;
             border: none;
-            transform: none;
+            text-transform: uppercase;
         }
         .dot:hover:not(.active) {
             background: #c5e6c1;
@@ -175,7 +173,7 @@
             color: #9e3b3b;
             transform: none;
         }
-        /* ===================================== */
+        /* ================================= */
 
         .box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         .btn {
@@ -202,19 +200,18 @@
         .inviter-info { text-align: center; font-size: 0.9rem; color: #aaa; margin: 15px 0; padding: 12px; border-radius: 12px; background: rgba(0,255,157,0.05); }
         .hidden { display: none; }
 
-        /* маленькая адаптация для мобильных */
         @media (max-width: 400px) {
             .dot {
                 width: 36px;
                 height: 36px;
                 border-radius: 12px;
+                font-size: 0.65rem;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- Бегущая строка -->
 <div class="ticker">
     <span>SPARKPOINT PREMIUM — PRIVATE ACCESS • LIMITED SLOTS • ACTIVATE NOW • SPARKPOINT PREMIUM — PRIVATE ACCESS • LIMITED SLOTS • ACTIVATE NOW • </span>
 </div>
@@ -268,7 +265,7 @@
 </div>
 
 <script>
-// ВЕСЬ ТВОЙ ИСХОДНЫЙ JS (НИЧЕГО НЕ МЕНЯЛ)
+// ВЕСЬ ТВОЙ ИСХОДНЫЙ JS (НИЧЕГО НЕ МЕНЯЛ, КРОМЕ ДОБАВЛЕНИЯ ТЕКСТА ВНУТРИ .dot)
 const LEVEL_SLOTS = [0, 2, 6, 14, 2, 6, 14, 2, 6, 14];
 
 const CONTRACT_ADDR = '0x2c4326c0577e8Ef8679B302eAd3603Df8224B7ed';
@@ -395,6 +392,8 @@ function renderStructure(currentLevel, partnersCount, structureCount) {
         for (let i = 0; i < slots; i++) {
             const dot = document.createElement('div');
             dot.className = 'dot';
+            // Добавляем текст "SLOT" внутрь каждого места
+            dot.textContent = 'SLOT';
             if (i < filledThisLevel) dot.classList.add('active');
             dotsDiv.appendChild(dot);
         }
@@ -463,4 +462,4 @@ window.onload = () => {
 };
 </script>
 </body>
-</html>
+    </html>
