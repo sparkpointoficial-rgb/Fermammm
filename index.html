@@ -363,7 +363,7 @@ function renderStructure(currentLevel, partnersCount, structureCount) {
     const container = document.getElementById('matrixBox');
     container.innerHTML = '';
 
-    let filledL1 = Math.min(partnersCount, LEVEL_CAPITAL[1]);
+    let filledL1 = Math.min(partnersCount, LEVEL_SLOT[1]);
     let remaining = structureCount;
 
     for (let lvl = 1; lvl <= 9; lvl++) {
@@ -392,8 +392,8 @@ function renderStructure(currentLevel, partnersCount, structureCount) {
         for (let i = 0; i < slots; i++) {
             const dot = document.createElement('div');
             dot.className = 'dot';
-            // Добавляем текст "CAPITAL" внутрь каждого места
-            dot.textContent = 'SLOT';
+            // Добавляем текст "SLOT" внутрь каждого места
+            dot.textContent = 'SLRR';
             if (i < filledThisLevel) dot.classList.add('active');
             dotsDiv.appendChild(dot);
         }
