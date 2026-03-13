@@ -1,276 +1,326 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>CriptoCapital Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
-
-<style>
-
-body{
-margin:0;
-font-family:Arial;
-background:linear-gradient(180deg,#020617,#020c1b,#020617);
-color:white;
-}
-
-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px 40px;
-background:#020617;
-box-shadow:0 0 20px #00ff9d22;
-}
-
-.logo{
-font-size:26px;
-font-weight:bold;
-color:#00ff9d;
-}
-
-.connect{
-background:#00ff9d;
-border:none;
-padding:10px 20px;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.dashboard{
-display:flex;
-gap:20px;
-padding:30px;
-flex-wrap:wrap;
-justify-content:center;
-}
-
-.card{
-background:#071426;
-padding:20px;
-border-radius:15px;
-width:160px;
-text-align:center;
-box-shadow:0 0 15px #00ff9d33;
-}
-
-.card h3{
-margin:0;
-font-size:16px;
-color:#aaa;
-}
-
-.value{
-font-size:24px;
-color:#00ff9d;
-margin-top:5px;
-}
-
-.farm{
-margin-top:30px;
-display:flex;
-justify-content:center;
-gap:30px;
-flex-wrap:wrap;
-}
-
-.gpu{
-width:170px;
-height:90px;
-background:#0b1c33;
-border-radius:15px;
-position:relative;
-box-shadow:0 0 20px #00ff9d55;
-}
-
-.fan{
-width:38px;
-height:38px;
-border:4px solid #555;
-border-top:4px solid #00ff9d;
-border-radius:50%;
-position:absolute;
-top:25px;
-left:65px;
-animation:spin 0.7s linear infinite;
-}
-
-@keyframes spin{
-0%{transform:rotate(0)}
-100%{transform:rotate(360deg)}
-}
-
-.led{
-width:8px;
-height:8px;
-background:#00ff9d;
-border-radius:50%;
-position:absolute;
-right:12px;
-top:12px;
-animation:blink 1s infinite;
-}
-
-@keyframes blink{
-0%{opacity:1}
-50%{opacity:0.2}
-100%{opacity:1}
-}
-
-.actions{
-text-align:center;
-margin-top:30px;
-}
-
-button.action{
-background:#00ff9d;
-border:none;
-padding:12px 25px;
-border-radius:10px;
-margin:10px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.ref{
-text-align:center;
-margin-top:30px;
-color:#aaa;
-font-size:14px;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandBox — покупка мест в пакетах</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #e9ecf3 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .grandbox-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e2b3c;
+            text-shadow: 2px 2px 4px rgba(0,20,30,0.1);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subhead {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            border-bottom: 2px dashed #a0b8cc;
+            padding-bottom: 15px;
+        }
+        .packages-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-items: stretch;
+        }
+        .package {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(4px);
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -8px rgba(0,30,50,0.25), inset 0 1px 4px #ffffffcc;
+            padding: 25px 20px 25px 20px;
+            width: 300px;
+            transition: transform 0.15s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        .package:hover {
+            transform: translateY(-6px);
+        }
+        .package h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1a3b4e;
+            margin-bottom: 12px;
+            border-left: 6px solid #2a7faa;
+            padding-left: 15px;
+        }
+        .stats {
+            background: #eef2f7;
+            border-radius: 60px;
+            padding: 10px 18px;
+            margin-bottom: 25px;
+            display: inline-block;
+            align-self: flex-start;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0a2a38;
+            box-shadow: inset 0 2px 5px #cdd9e9;
+        }
+        .stats span {
+            font-weight: 700;
+            color: #1d5a7a;
+        }
+        .seats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 15px 0;
+            background: #d9e2ef40;
+            border-radius: 24px;
+            padding: 15px 12px;
+            justify-content: center;
+            min-height: 120px;
+            border: 1px solid #ffffffb0;
+            box-shadow: inset 0 0 0 1px #b7c9dd, 0 6px 12px #b0c4d9;
+        }
+        .seat {
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 4px 6px #0000001a, 0 0 0 1px #bacfdf inset;
+            transition: all 0.1s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #1e3f5a;
+            font-weight: 600;
+        }
+        .seat.free {
+            background: #dcf2d8;
+            box-shadow: 0 4px 8px #2b7a3b30, 0 0 0 2px #58a36f inset;
+        }
+        .seat.free:hover {
+            background: #c5e6c1;
+            transform: scale(1.07);
+            box-shadow: 0 6px 12px #2b7a3b60, 0 0 0 2px #3d8e52 inset;
+        }
+        .seat.taken {
+            background: #f1cfcf;
+            box-shadow: 0 2px 5px #a0454530, 0 0 0 2px #c45a5a inset;
+            cursor: not-allowed;
+            opacity: 0.7;
+            color: #9e3b3b;
+        }
+        .footer-actions {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .reset-btn {
+            background: #264e6b;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 14px 40px;
+            border-radius: 48px;
+            box-shadow: 0 10px 16px #1a3a4e70, 0 3px 0 #0e293b inset;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+            border: 1px solid #9fc0dd;
+        }
+        .reset-btn:hover {
+            background: #2e6080;
+            transform: scale(1.02);
+            box-shadow: 0 14px 22px #14303e80, 0 2px 0 #124052 inset;
+        }
+        .reset-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 6px 12px #14303e80;
+        }
+        .note {
+            margin-top: 25px;
+            color: #2b4e6b;
+            font-size: 0.95rem;
+            text-align: center;
+            background: #ebf3fa;
+            padding: 8px 20px;
+            border-radius: 40px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
 </head>
-
 <body>
+<div class="grandbox-container">
+    <h1>🏆 GrandBox</h1>
+    <div class="subhead">выбери свой пакет и займи место</div>
 
-<header>
+    <div class="packages-grid" id="packagesGrid">
+        <!-- Пакет 1 : 2 места -->
+        <div class="package" data-package-id="1">
+            <h3>🥉 Базовый</h3>
+            <div class="stats">📊 свободно <span class="free-count">2</span> / <span class="total-seats">2</span></div>
+            <div class="seats-container" data-total="2"></div>
+        </div>
 
-<div class="logo">CriptoCapital</div>
+        <!-- Пакет 2 : 6 мест -->
+        <div class="package" data-package-id="2">
+            <h3>🥈 Стандарт</h3>
+            <div class="stats">📊 свободно <span class="free-count">6</span> / <span class="total-seats">6</span></div>
+            <div class="seats-container" data-total="6"></div>
+        </div>
 
-<button class="connect" onclick="connectWallet()">Connect Wallet</button>
+        <!-- Пакет 3 : 14 мест -->
+        <div class="package" data-package-id="3">
+            <h3>🥇 Премиум</h3>
+            <div class="stats">📊 свободно <span class="free-count">14</span> / <span class="total-seats">14</span></div>
+            <div class="seats-container" data-total="14"></div>
+        </div>
+    </div>
 
-</header>
-
-<div class="dashboard">
-
-<div class="card">
-<h3>Balance</h3>
-<div class="value" id="balance">0 BNB</div>
-</div>
-
-<div class="card">
-<h3>GPU</h3>
-<div class="value" id="gpuCount">0</div>
-</div>
-
-<div class="card">
-<h3>Hashrate</h3>
-<div class="value" id="hashrate">0 MH/s</div>
-</div>
-
-<div class="card">
-<h3>Income/hour</h3>
-<div class="value" id="income">0</div>
-</div>
-
-</div>
-
-<div class="farm" id="farm"></div>
-
-<div class="actions">
-
-<button class="action" onclick="buyGPU()">Buy GPU (0.01 BNB)</button>
-
-<button class="action" onclick="upgradeGPU()">Upgrade GPU</button>
-
-<button class="action" onclick="withdraw()">Withdraw</button>
-
-</div>
-
-<div class="ref">
-Referral link:<br>
-<span id="refLink">connect wallet</span>
+    <div class="footer-actions">
+        <button class="reset-btn" id="resetAllBtn">⟲ Сбросить все места</button>
+    </div>
+    <div class="note">👆 кликни по любому свободному месту (зелёное), чтобы занять его. Места в пакетах ограничены.</div>
 </div>
 
 <script>
+    (function() {
+        // ——————————————————————————————————
+        // 1. Инициализация: создаём места во всех пакетах согласно data-total
+        // ——————————————————————————————————
+        const packages = document.querySelectorAll('.package');
 
-let web3;
-let account;
+        // Функция обновления счётчика свободных мест внутри одного пакета
+        function updateFreeCount(packageElement) {
+            const freeSeats = packageElement.querySelectorAll('.seat.free').length;
+            const freeSpan = packageElement.querySelector('.free-count');
+            if (freeSpan) {
+                freeSpan.textContent = freeSeats;
+            }
+        }
 
-let gpuCount = 0;
+        // Генерация мест в контейнере
+        function generateSeats(container) {
+            const total = parseInt(container.getAttribute('data-total'), 10);
+            if (isNaN(total) || total <= 0) return;
+            container.innerHTML = ''; // очистим на всякий случай
+            for (let i = 1; i <= total; i++) {
+                const seat = document.createElement('div');
+                seat.className = 'seat free'; // все места свободны
+                // можно добавить маленькую нумерацию для наглядности
+                seat.textContent = i;
+                container.appendChild(seat);
+            }
+        }
 
-function renderFarm(){
+        // Сгенерировать места для всех пакетов
+        packages.forEach(pkg => {
+            const seatsContainer = pkg.querySelector('.seats-container');
+            if (seatsContainer) {
+                generateSeats(seatsContainer);
+                // сразу обновим счётчик (на всякий случай)
+                updateFreeCount(pkg);
+            }
+        });
 
-const farm = document.getElementById("farm");
+        // ——————————————————————————————————
+        // 2. Обработчик кликов (делегирование) – покупка места
+        // ——————————————————————————————————
+        document.getElementById('packagesGrid').addEventListener('click', function(e) {
+            // Находим элемент места, по которому кликнули (и убеждаемся, что это .seat)
+            const seat = e.target.closest('.seat');
+            if (!seat) return; // клик не по месту
 
-farm.innerHTML="";
+            // Проверяем, свободно ли место
+            if (!seat.classList.contains('free')) return; // занято или другое состояние – ничего не делаем
 
-for(let i=0;i<gpuCount;i++){
+            // Находим родительский пакет
+            const parentPackage = seat.closest('.package');
+            if (!parentPackage) return;
 
-farm.innerHTML += `
-<div class="gpu">
-<div class="fan"></div>
-<div class="led"></div>
-</div>
-`;
+            // Совершаем покупку: меняем класс
+            seat.classList.remove('free');
+            seat.classList.add('taken');
 
-}
+            // Обновляем счётчик свободных мест в этом пакете
+            updateFreeCount(parentPackage);
+        });
 
-}
+        // ——————————————————————————————————
+        // 3. Сброс всех мест (возврат в исходное состояние)
+        // ——————————————————————————————————
+        function resetAllPackages() {
+            packages.forEach(pkg => {
+                const seats = pkg.querySelectorAll('.seat');
+                seats.forEach(seat => {
+                    seat.classList.remove('taken');
+                    seat.classList.add('free');
+                });
+                // обновляем счётчики
+                updateFreeCount(pkg);
+            });
+        }
 
-async function connectWallet(){
+        const resetBtn = document.getElementById('resetAllBtn');
+        resetBtn.addEventListener('click', resetAllPackages);
 
-if(window.ethereum){
+        // ——————————————————————————————————
+        // Дополнительно: можно добавить проверку, что общее кол-во мест не менялось,
+        // но total-seats уже статично отображается. При желании можно синхронизировать,
+        // но в данном случае это неизменные цифры.
+        // Для красоты можно вывести общее количество мест в статистике из data-атрибута.
+        // Сделаем это при загрузке — пропишем total-seats равным data-total контейнера.
+        // (уже проставлено вручную в HTML, но перестрахуемся)
+        packages.forEach(pkg => {
+            const container = pkg.querySelector('.seats-container');
+            const totalSpan = pkg.querySelector('.total-seats');
+            if (container && totalSpan) {
+                const total = container.getAttribute('data-total');
+                totalSpan.textContent = total;
+            }
+        });
 
-web3 = new Web3(window.ethereum);
-
-await window.ethereum.request({
-method:'eth_requestAccounts'
-});
-
-const accounts = await web3.eth.getAccounts();
-
-account = accounts[0];
-
-document.getElementById("refLink").innerText =
-window.location.href+"?ref="+account;
-
-}
-
-}
-
-function buyGPU(){
-
-gpuCount++;
-
-document.getElementById("gpuCount").innerText=gpuCount;
-
-document.getElementById("hashrate").innerText =
-gpuCount*60+" MH/s";
-
-document.getElementById("income").innerText =
-(gpuCount*0.0002).toFixed(5)+" BNB";
-
-renderFarm();
-
-}
-
-function upgradeGPU(){
-
-alert("GPU upgraded");
-
-}
-
-function withdraw(){
-
-alert("Withdraw from smart contract");
-
-}
-
+    })();
 </script>
+<!-- Дополнительный маленький фикс: при очень малых экранах квадратики не съезжают -->
+<style>
+    @media (max-width: 400px) {
+        .seat {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+        }
+        .package {
+            width: 260px;
+            padding: 20px 12px;
+        }
+        h1 { font-size: 2.4rem; }
+    }
+</style>
 
 </body>
 </html>
