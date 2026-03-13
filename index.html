@@ -3,110 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandBox — покупка мест в пакетах</title>
+    <title>SparkPoint Premium — места в матрице</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            margin: 0;
-            padding: 0;
+        :root {
+            --neon-green: #00ff9d;
+            --gold: #ffd700;
+            --telegram-blue: #0088cc;
+            --bg-dark: #0f0f1b;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
+
         body {
-            background: linear-gradient(145deg, #f5f7fc 0%, #e9ecf3 100%);
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top right, #1a1a2e, transparent);
+            color: #fff;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0 10px 20px;
             min-height: 100vh;
+        }
+
+        /* Бегущая строка */
+        .ticker {
+            background: linear-gradient(90deg, #111133, #1a1a2e);
+            color: var(--neon-green);
+            font-weight: bold;
+            padding: 10px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-bottom: 1px solid rgba(0,255,157,0.15);
+            text-align: center;
+            font-size: 1rem;
+        }
+        .ticker span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 35s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .container { max-width: 460px; margin: 0 auto; }
+
+        .header { text-align: center; margin: 20px 0 30px; position: relative; }
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            gap: 14px;
         }
-        .grandbox-container {
-            max-width: 1200px;
-            width: 100%;
+        .logo span { font-size: 2.8rem; filter: drop-shadow(0 0 10px var(--gold)); }
+
+        /* Анимированный логотип */
+        .logo-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-green);
+            position: relative;
+            animation: rotate 10s linear infinite;
         }
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #1e2b3c;
-            text-shadow: 2px 2px 4px rgba(0,20,30,0.1);
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-align: center;
+        .logo-node::after {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            background: var(--gold);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px var(--gold);
+            animation: pulse 2.5s infinite alternate;
         }
-        .subhead {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            border-bottom: 2px dashed #a0b8cc;
-            padding-bottom: 15px;
-        }
-        .packages-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-            align-items: stretch;
-        }
-        .package {
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(4px);
-            border-radius: 32px;
-            box-shadow: 0 20px 35px -8px rgba(0,30,50,0.25), inset 0 1px 4px #ffffffcc;
-            padding: 25px 20px 25px 20px;
-            width: 300px;
-            transition: transform 0.15s ease;
-            border: 1px solid rgba(255,255,255,0.5);
-            display: flex;
-            flex-direction: column;
-        }
-        .package:hover {
-            transform: translateY(-6px);
-        }
-        .package h3 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #1a3b4e;
-            margin-bottom: 12px;
-            border-left: 6px solid #2a7faa;
-            padding-left: 15px;
-        }
-        .stats {
-            background: #eef2f7;
-            border-radius: 60px;
-            padding: 10px 18px;
-            margin-bottom: 25px;
+        @keyframes rotate { to { transform: rotate(360deg); } }
+        @keyframes pulse { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-50%,-50%) scale(1.3); } }
+
+        .wallet-addr {
+            font-size: 0.85rem;
+            color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 12px;
             display: inline-block;
-            align-self: flex-start;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #0a2a38;
-            box-shadow: inset 0 2px 5px #cdd9e9;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            font-family: monospace;
         }
-        .stats span {
-            font-weight: 700;
-            color: #1d5a7a;
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .seats-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px 0 15px 0;
-            background: #d9e2ef40;
+        .stat-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+        }
+        .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        .matrix-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 15px 12px;
-            justify-content: center;
-            min-height: 120px;
-            border: 1px solid #ffffffb0;
-            box-shadow: inset 0 0 0 1px #b7c9dd, 0 6px 12px #b0c4d9;
+            padding: 20px;
+            margin-bottom: 25px;
+            max-height: 520px;
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
-        .seat {
+        .matrix-box::-webkit-scrollbar { width: 6px; }
+        .matrix-box::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+
+        .lvl-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin: 24px 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 10px;
+        }
+        .lvl-header:first-child { margin-top: 0; }
+        .lvl-name { font-size: 1rem; font-weight: bold; color: var(--neon-green); }
+        .lvl-slots { font-size: 0.8rem; color: #aaa; }
+
+        /* === НОВЫЙ ДИЗАЙН МЕСТ (ВМЕСТО КРУЖКОВ) === */
+        .dots { 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin: 12px 0; 
+        }
+        .dot {
             width: 44px;
             height: 44px;
             border-radius: 16px;
-            background: #ffffff;
-            box-shadow: 0 4px 6px #0000001a, 0 0 0 1px #bacfdf inset;
-            transition: all 0.1s;
+            background: #dcf2d8;                /* свободное место */
+            box-shadow: 0 4px 8px rgba(43, 122, 59, 0.2), 0 0 0 2px #58a36f inset;
+            transition: all 0.2s ease;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -114,213 +159,308 @@
             font-size: 0.8rem;
             color: #1e3f5a;
             font-weight: 600;
+            border: none;
+            transform: none;
         }
-        .seat.free {
-            background: #dcf2d8;
-            box-shadow: 0 4px 8px #2b7a3b30, 0 0 0 2px #58a36f inset;
-        }
-        .seat.free:hover {
+        .dot:hover:not(.active) {
             background: #c5e6c1;
             transform: scale(1.07);
-            box-shadow: 0 6px 12px #2b7a3b60, 0 0 0 2px #3d8e52 inset;
+            box-shadow: 0 6px 12px rgba(43, 122, 59, 0.3), 0 0 0 2px #3d8e52 inset;
         }
-        .seat.taken {
-            background: #f1cfcf;
-            box-shadow: 0 2px 5px #a0454530, 0 0 0 2px #c45a5a inset;
+        .dot.active {
+            background: #f1cfcf;                /* занятое место */
+            box-shadow: 0 2px 5px rgba(160, 69, 69, 0.3), 0 0 0 2px #c45a5a inset;
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.85;
             color: #9e3b3b;
+            transform: none;
         }
-        .footer-actions {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
+        /* ===================================== */
+
+        .box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .btn {
+            width: 100%; padding: 16px; border-radius: 14px; border: none;
+            font-weight: bold; cursor: pointer; transition: all 0.3s;
+            font-size: 0.95rem; text-transform: uppercase;
+            display: block; text-decoration: none; text-align: center;
+            box-sizing: border-box;
         }
-        .reset-btn {
-            background: #264e6b;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 14px 40px;
-            border-radius: 48px;
-            box-shadow: 0 10px 16px #1a3a4e70, 0 3px 0 #0e293b inset;
-            cursor: pointer;
-            transition: all 0.15s;
-            letter-spacing: 0.5px;
-            border: 1px solid #9fc0dd;
+        .btn-green { background: var(--neon-green); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 157, 0.3); }
+        .btn-green:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 255, 157, 0.45); }
+        
+        .btn-tg { 
+            background: var(--telegram-blue); color: #fff; margin-top: 12px; 
+            box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
         }
-        .reset-btn:hover {
-            background: #2e6080;
-            transform: scale(1.02);
-            box-shadow: 0 14px 22px #14303e80, 0 2px 0 #124052 inset;
+
+        input {
+            width: 100%; padding: 14px; background: #000; border: 1px solid #333;
+            border-radius: 12px; color: #fff; margin: 12px 0; box-sizing: border-box;
+            font-family: monospace; font-size: 0.95rem;
         }
-        .reset-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 6px 12px #14303e80;
-        }
-        .note {
-            margin-top: 25px;
-            color: #2b4e6b;
-            font-size: 0.95rem;
-            text-align: center;
-            background: #ebf3fa;
-            padding: 8px 20px;
-            border-radius: 40px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
+
+        .inviter-info { text-align: center; font-size: 0.9rem; color: #aaa; margin: 15px 0; padding: 12px; border-radius: 12px; background: rgba(0,255,157,0.05); }
+        .hidden { display: none; }
+
+        /* маленькая адаптация для мобильных */
+        @media (max-width: 400px) {
+            .dot {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="grandbox-container">
-    <h1>🏆 GrandBox</h1>
-    <div class="subhead">выбери свой пакет и займи место</div>
 
-    <div class="packages-grid" id="packagesGrid">
-        <!-- Пакет 1 : 2 места -->
-        <div class="package" data-package-id="1">
-            <h3>🥉 Базовый</h3>
-            <div class="stats">📊 свободно <span class="free-count">2</span> / <span class="total-seats">2</span></div>
-            <div class="seats-container" data-total="2"></div>
+<!-- Бегущая строка -->
+<div class="ticker">
+    <span>SPARKPOINT PREMIUM — PRIVATE ACCESS • LIMITED SLOTS • ACTIVATE NOW • SPARKPOINT PREMIUM — PRIVATE ACCESS • LIMITED SLOTS • ACTIVATE NOW • </span>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <div class="logo-node"></div>
+            SPARKPOINT
         </div>
+        <div id="addrDisplay" class="wallet-addr hidden">Not Connected</div>
+        <button id="connBtn" class="btn btn-green" style="margin-top: 18px;" onclick="connect()">Connect Wallet</button>
+        <a href="https://t.me/spartpoint/32" target="_blank" class="btn btn-tg">📖 Как оплатить? (Инструкция)</a>
+    </div>
 
-        <!-- Пакет 2 : 6 мест -->
-        <div class="package" data-package-id="2">
-            <h3>🥈 Стандарт</h3>
-            <div class="stats">📊 свободно <span class="free-count">6</span> / <span class="total-seats">6</span></div>
-            <div class="seats-container" data-total="6"></div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">🚀 Level</span>
+            <div class="stat-value" id="valLvl">-</div>
         </div>
-
-        <!-- Пакет 3 : 14 мест -->
-        <div class="package" data-package-id="3">
-            <h3>🥇 Премиум</h3>
-            <div class="stats">📊 свободно <span class="free-count">14</span> / <span class="total-seats">14</span></div>
-            <div class="seats-container" data-total="14"></div>
+        <div class="stat-card">
+            <span class="stat-label">💎 Internal Balance</span>
+            <div class="stat-value" id="valBal">0.0000 BNB</div>
         </div>
     </div>
 
-    <div class="footer-actions">
-        <button class="reset-btn" id="resetAllBtn">⟲ Сбросить все места</button>
+    <div class="matrix-box" id="matrixBox"></div>
+
+    <div id="inviterBox" class="inviter-info hidden">
+        🤝 Пригласил: <br><span id="invAddr" style="color: var(--neon-green); font-family: monospace;"></span>
     </div>
-    <div class="note">👆 кликни по любому свободному месту (зелёное), чтобы занять его. Места в пакетах ограничены.</div>
+
+    <div id="regArea" class="box">
+        <label style="font-size: 0.85rem; color: #aaa;">REFERRER ADDRESS</label>
+        <input type="text" id="refInput" placeholder="0x000...0000">
+        <button class="btn btn-green" onclick="register()">Activate Matrix (0.001 BNB)</button>
+    </div>
+
+    <div id="linkArea" class="box hidden">
+        <label style="font-size: 0.85rem; color: #aaa;">ВАША ПРИГЛАСИТЕЛЬНАЯ ССЫЛКА (макс 2 чел.)</label>
+        <input type="text" id="refLink" readonly>
+        <button id="copyBtn" class="btn btn-green" onclick="copy()">Копировать ссылку 🔗</button>
+    </div>
+
+    <div id="adminPanel" class="box hidden" style="border-color: var(--gold);">
+        <b style="color: var(--gold);">👑 ADMIN PANEL</b>
+        <input type="text" id="admU" placeholder="User Address (0x...)">
+        <input type="text" id="admR" placeholder="Referrer Address (0x...)">
+        <button class="btn" style="background: var(--gold); color: #000;" onclick="adminAdd()">Add Free User</button>
+    </div>
 </div>
 
 <script>
-    (function() {
-        // ——————————————————————————————————
-        // 1. Инициализация: создаём места во всех пакетах согласно data-total
-        // ——————————————————————————————————
-        const packages = document.querySelectorAll('.package');
+// ВЕСЬ ТВОЙ ИСХОДНЫЙ JS (НИЧЕГО НЕ МЕНЯЛ)
+const LEVEL_SLOTS = [0, 2, 6, 14, 2, 6, 14, 2, 6, 14];
 
-        // Функция обновления счётчика свободных мест внутри одного пакета
-        function updateFreeCount(packageElement) {
-            const freeSeats = packageElement.querySelectorAll('.seat.free').length;
-            const freeSpan = packageElement.querySelector('.free-count');
-            if (freeSpan) {
-                freeSpan.textContent = freeSeats;
-            }
-        }
+const CONTRACT_ADDR = '0x2c4326c0577e8Ef8679B302eAd3603Df8224B7ed';
 
-        // Генерация мест в контейнере
-        function generateSeats(container) {
-            const total = parseInt(container.getAttribute('data-total'), 10);
-            if (isNaN(total) || total <= 0) return;
-            container.innerHTML = ''; // очистим на всякий случай
-            for (let i = 1; i <= total; i++) {
-                const seat = document.createElement('div');
-                seat.className = 'seat free'; // все места свободны
-                // можно добавить маленькую нумерацию для наглядности
-                seat.textContent = i;
-                container.appendChild(seat);
-            }
-        }
+const ABI = [
+    {"inputs":[{"internalType":"address","name":"_user","type":"address"},{"internalType":"address","name":"_referrer","type":"address"}],"name":"adminAddUser","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"register","outputs":[],"stateMutability":"payable","type":"function"},
+    {"inputs":[],"name":"admin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+    {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[
+        {"internalType":"uint256","name":"level","type":"uint256"},
+        {"internalType":"address","name":"referrer","type":"address"},
+        {"internalType":"uint256","name":"partnersCount","type":"uint256"},
+        {"internalType":"uint256","name":"structureCount","type":"uint256"},
+        {"internalType":"uint256","name":"internalBalance","type":"uint256"},
+        {"internalType":"bool","name":"exists","type":"bool"}
+    ],"stateMutability":"view","type":"function"}
+];
 
-        // Сгенерировать места для всех пакетов
-        packages.forEach(pkg => {
-            const seatsContainer = pkg.querySelector('.seats-container');
-            if (seatsContainer) {
-                generateSeats(seatsContainer);
-                // сразу обновим счётчик (на всякий случай)
-                updateFreeCount(pkg);
-            }
-        });
+let web3, contract, userAccount;
 
-        // ——————————————————————————————————
-        // 2. Обработчик кликов (делегирование) – покупка места
-        // ——————————————————————————————————
-        document.getElementById('packagesGrid').addEventListener('click', function(e) {
-            // Находим элемент места, по которому кликнули (и убеждаемся, что это .seat)
-            const seat = e.target.closest('.seat');
-            if (!seat) return; // клик не по месту
+async function connect() {
+    if (!window.ethereum) return alert("Установите MetaMask / Trust Wallet");
+    try {
+        const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAccount = accs[0];
+        web3 = new Web3(window.ethereum);
+        contract = new web3.eth.Contract(ABI, CONTRACT_ADDR);
 
-            // Проверяем, свободно ли место
-            if (!seat.classList.contains('free')) return; // занято или другое состояние – ничего не делаем
+        document.getElementById('connBtn').classList.add('hidden');
+        document.getElementById('addrDisplay').classList.remove('hidden');
+        document.getElementById('addrDisplay').innerText = 
+            userAccount.substring(0,6) + '...' + userAccount.substring(38);
 
-            // Находим родительский пакет
-            const parentPackage = seat.closest('.package');
-            if (!parentPackage) return;
-
-            // Совершаем покупку: меняем класс
-            seat.classList.remove('free');
-            seat.classList.add('taken');
-
-            // Обновляем счётчик свободных мест в этом пакете
-            updateFreeCount(parentPackage);
-        });
-
-        // ——————————————————————————————————
-        // 3. Сброс всех мест (возврат в исходное состояние)
-        // ——————————————————————————————————
-        function resetAllPackages() {
-            packages.forEach(pkg => {
-                const seats = pkg.querySelectorAll('.seat');
-                seats.forEach(seat => {
-                    seat.classList.remove('taken');
-                    seat.classList.add('free');
-                });
-                // обновляем счётчики
-                updateFreeCount(pkg);
-            });
-        }
-
-        const resetBtn = document.getElementById('resetAllBtn');
-        resetBtn.addEventListener('click', resetAllPackages);
-
-        // ——————————————————————————————————
-        // Дополнительно: можно добавить проверку, что общее кол-во мест не менялось,
-        // но total-seats уже статично отображается. При желании можно синхронизировать,
-        // но в данном случае это неизменные цифры.
-        // Для красоты можно вывести общее количество мест в статистике из data-атрибута.
-        // Сделаем это при загрузке — пропишем total-seats равным data-total контейнера.
-        // (уже проставлено вручную в HTML, но перестрахуемся)
-        packages.forEach(pkg => {
-            const container = pkg.querySelector('.seats-container');
-            const totalSpan = pkg.querySelector('.total-seats');
-            if (container && totalSpan) {
-                const total = container.getAttribute('data-total');
-                totalSpan.textContent = total;
-            }
-        });
-
-    })();
-</script>
-<!-- Дополнительный маленький фикс: при очень малых экранах квадратики не съезжают -->
-<style>
-    @media (max-width: 400px) {
-        .seat {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-        }
-        .package {
-            width: 260px;
-            padding: 20px 12px;
-        }
-        h1 { font-size: 2.4rem; }
+        updateDashboard();
+    } catch(e) {
+        console.error(e);
+        alert("Ошибка подключения");
     }
-</style>
+}
 
+async function updateDashboard() {
+    if (!userAccount) return;
+
+    try {
+        const data = await contract.methods.users(userAccount).call();
+        const adminAddr = await contract.methods.admin().call();
+
+        if (userAccount.toLowerCase() === adminAddr.toLowerCase()) {
+            document.getElementById('adminPanel').classList.remove('hidden');
+        }
+
+        if (data.exists) {
+            document.getElementById('regArea').classList.add('hidden');
+            document.getElementById('linkArea').classList.remove('hidden');
+
+            document.getElementById('valLvl').innerText = data.level;
+            document.getElementById('valBal').innerText = 
+                parseFloat(web3.utils.fromWei(data.internalBalance || 0, 'ether')).toFixed(4) + " BNB";
+
+            document.getElementById('inviterBox').classList.remove('hidden');
+            const ref = data.referrer;
+            document.getElementById('invAddr').innerText = 
+                ref === '0x0000000000000000000000000000000000000000' ? 'Нет' : 
+                ref.substring(0,8) + '...' + ref.substring(36);
+
+            renderStructure(parseInt(data.level), parseInt(data.partnersCount || 0), parseInt(data.structureCount || 0));
+
+            const partners = parseInt(data.partnersCount || 0);
+            const linkInput = document.getElementById('refLink');
+            const copyBtn = document.getElementById('copyBtn');
+
+            if (partners >= 2) {
+                linkInput.value = "ЛИМИТ 2/2 ДОСТИГНУТ";
+                linkInput.style.color = "#ff5555";
+                copyBtn.innerText = "❌ Лимит исчерпан";
+                copyBtn.disabled = true;
+                copyBtn.style.background = "#222";
+                copyBtn.style.color = "#666";
+            } else {
+                const link = window.location.origin + window.location.pathname + "?ref=" + userAccount;
+                linkInput.value = link;
+                linkInput.style.color = "#fff";
+                copyBtn.disabled = false;
+                copyBtn.innerText = "Копировать ссылку 🔗";
+                copyBtn.style.background = "var(--neon-green)";
+                copyBtn.style.color = "#000";
+            }
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function renderStructure(currentLevel, partnersCount, structureCount) {
+    const container = document.getElementById('matrixBox');
+    container.innerHTML = '';
+
+    let filledL1 = Math.min(partnersCount, LEVEL_SLOTS[1]);
+    let remaining = structureCount;
+
+    for (let lvl = 1; lvl <= 9; lvl++) {
+        const slots = LEVEL_SLOTS[lvl];
+
+        const header = document.createElement('div');
+        header.className = 'lvl-header';
+        header.innerHTML = `
+            <span class="lvl-name">LEVEL ${lvl}</span>
+            <span class="lvl-slots">${slots} SLOTS</span>
+        `;
+        container.appendChild(header);
+
+        const dotsDiv = document.createElement('div');
+        dotsDiv.className = 'dots';
+
+        let filledThisLevel = 0;
+
+        if (lvl === 1) {
+            filledThisLevel = filledL1;
+        } else {
+            filledThisLevel = Math.min(remaining, slots);
+            remaining = Math.max(0, remaining - filledThisLevel * 2);
+        }
+
+        for (let i = 0; i < slots; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            if (i < filledThisLevel) dot.classList.add('active');
+            dotsDiv.appendChild(dot);
+        }
+
+        container.appendChild(dotsDiv);
+
+        if (lvl > currentLevel) {
+            header.style.opacity = '0.5';
+            dotsDiv.style.opacity = '0.4';
+        }
+    }
+}
+
+async function register() {
+    if (!userAccount) return alert("Сначала подключите кошелёк");
+
+    let referrer = document.getElementById('refInput').value.trim();
+    if (!referrer || !web3.utils.isAddress(referrer)) {
+        referrer = '0x0000000000000000000000000000000000000000';
+    }
+
+    try {
+        await contract.methods.register(referrer).send({
+            from: userAccount,
+            value: web3.utils.toWei('0.001', 'ether')
+        });
+        alert("Пакет активирован!");
+        updateDashboard();
+    } catch(e) {
+        console.error(e);
+        alert("Ошибка: " + (e.message || "Транзакция отклонена"));
+    }
+}
+
+async function adminAdd() {
+    if (!userAccount) return;
+    const userAddr = document.getElementById('admU').value.trim();
+    const refAddr = document.getElementById('admR').value.trim();
+
+    if (!web3.utils.isAddress(userAddr) || !web3.utils.isAddress(refAddr)) {
+        return alert("Некорректный адрес");
+    }
+
+    try {
+        await contract.methods.adminAddUser(userAddr, refAddr).send({ from: userAccount });
+        alert("Пользователь добавлен бесплатно");
+        updateDashboard();
+    } catch(e) {
+        alert("Ошибка: " + e.message);
+    }
+}
+
+function copy() {
+    const input = document.getElementById('refLink');
+    if (input.value.includes("ЛИМИТ")) return;
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    alert("Ссылка скопирована!");
+}
+
+window.onload = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('ref')) {
+        document.getElementById('refInput').value = params.get('ref');
+    }
+};
+</script>
 </body>
 </html>
