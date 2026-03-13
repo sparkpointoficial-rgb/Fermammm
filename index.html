@@ -363,7 +363,7 @@ function renderStructure(currentLevel, partnersCount, structureCount) {
     const container = document.getElementById('matrixBox');
     container.innerHTML = '';
 
-    let filledL1 = Math.min(partnersCount, LEVEL_SLOTS[1]);
+    let filledL1 = Math.min(partnersCount, LEVEL_CAPITAL[1]);
     let remaining = structureCount;
 
     for (let lvl = 1; lvl <= 9; lvl++) {
